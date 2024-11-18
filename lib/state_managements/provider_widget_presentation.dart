@@ -1,0 +1,88 @@
+part of '../main.dart';
+
+/// ChangeNotifier is one way to encapsulate your application state.
+/// The only code that is specific to ChangeNotifier is the call to notifyListeners().
+/// Call this method any time the model changes in a way that might change your app's UI
+class FakeDataModel extends ChangeNotifier {
+  FakeData _fakeData = FakeData(
+    person: Person(random),
+    vehicle: Vehicle(random),
+    currency: Currency(random),
+  );
+
+  ListTile get listTile => ListTile(
+        title: Text(_fakeData.person.name()),
+        subtitle: Text(
+            '${_fakeData.vehicle.model()} is worth ${Random().nextInt(100000)} ${_fakeData.currency.code()}'),
+      );
+
+  void update() {
+    _fakeData = FakeData(
+      person: Person(random),
+      vehicle: Vehicle(random),
+      currency: Currency(random),
+    );
+    notifyListeners();
+  }
+}
+
+class ProviderWidgetPresentation extends StatefulWidget {
+  const ProviderWidgetPresentation({
+    super.key,
+    required this.fakeDataModel,
+  });
+  final FakeDataModel fakeDataModel;
+  @override
+  State<ProviderWidgetPresentation> createState() =>
+      _ProviderWidgetPresentationWidgetState();
+}
+
+class _ProviderWidgetPresentationWidgetState
+    extends State<ProviderWidgetPresentation> {
+  late Timer timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // when _fakeData is updated, only the widgets that depend on it will be rebuilt,
+    // which makes the application more efficient and performant.
+    timer = Timer.periodic(
+      const Duration(seconds: 5),
+      (_) {
+        setState(() {
+          widget.fakeDataModel.update();
+        });
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.fakeDataModel.listTile;
+  }
+}
+
+/// ChangeNotifierProvider is the widget that provides an instance of a ChangeNotifier to its descendants.
+/// It should be placed above the widgets that need to access it, but not higher than necessary
+
+class ProviderWidgetRender extends StatelessWidget {
+  const ProviderWidgetRender({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => FakeDataModel(),
+      // Consumer allows to access the provider of <FakeDataModel>
+      child: Consumer<FakeDataModel>(builder: (context, fakeDataModel, child) {
+        return ProviderWidgetPresentation(fakeDataModel: fakeDataModel);
+      }),
+    );
+  }
+}
