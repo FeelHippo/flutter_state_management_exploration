@@ -44,6 +44,8 @@ dependencies:
   flutter_redux: ^0.10.0
   redux: ^5.0.0
   june: ^1.0.0+1
+  flutter_mobx: ^2.2.1+1
+  mobx: ^2.4.0
 
 dev_dependencies:
   flutter_test:
