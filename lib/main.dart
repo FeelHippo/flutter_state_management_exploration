@@ -19,6 +19,7 @@ part 'state_managements/june_widget_presentation.dart';
 part 'state_managements/provider_widget_presentation.dart';
 part 'state_managements/redux_widget_presentation.dart';
 part 'state_managements/riverpod_widget_presentation.dart';
+part 'state_managements/widgets/fake_data_list_tile.dart';
 
 void main() {
   runApp(const MyApp());

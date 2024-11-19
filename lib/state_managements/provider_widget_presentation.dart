@@ -10,11 +10,7 @@ class FakeDataModel extends ChangeNotifier {
     currency: Currency(random),
   );
 
-  ListTile get listTile => ListTile(
-        title: Text(_fakeData.person.name()),
-        subtitle: Text(
-            '${_fakeData.vehicle.model()} is worth ${Random().nextInt(100000)} ${_fakeData.currency.code()}'),
-      );
+  Widget get listTile => FakeDataListTile(fakeData: _fakeData);
 
   void update() {
     _fakeData = FakeData(

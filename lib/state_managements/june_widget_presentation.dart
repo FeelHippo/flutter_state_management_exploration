@@ -27,11 +27,7 @@ class JuneWidgetConsumer extends StatelessWidget {
     // The state management wraps the widget to be managed with JuneBuilder
     return JuneBuilder(
       () => FakeDataJuneState(),
-      builder: (state) => ListTile(
-        title: Text(state.fakeData.person.name()),
-        subtitle: Text(
-            '${state.fakeData.vehicle.model()} is worth ${Random().nextInt(100000)} ${state.fakeData.currency.code()}'),
-      ),
+      builder: (state) => FakeDataListTile(fakeData: state.fakeData),
     );
   }
 }

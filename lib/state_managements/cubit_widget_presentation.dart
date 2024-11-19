@@ -61,10 +61,8 @@ class _CubitWidgetPresentationWidgetState
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(widget.fakeData.person.name()),
-      subtitle: Text(
-          '${widget.fakeData.vehicle.model()} is worth ${Random().nextInt(100000)} ${widget.fakeData.currency.code()}'),
+    return FakeDataListTile(
+      fakeData: widget.fakeData,
     );
   }
 }

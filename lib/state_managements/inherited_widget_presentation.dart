@@ -89,11 +89,7 @@ class InheritedWidgetRender extends StatelessWidget {
   Widget build(BuildContext context) {
     final FakeData? fakeData = InheritedWidgetData.of(context)?.fakeData;
     return fakeData != null
-        ? ListTile(
-            title: Text(fakeData.person.name()),
-            subtitle: Text(
-                '${fakeData.vehicle.model()} is worth ${Random().nextInt(100000)} ${fakeData.currency.code()}'),
-          )
+        ? FakeDataListTile(fakeData: fakeData,)
         : Container();
   }
 }

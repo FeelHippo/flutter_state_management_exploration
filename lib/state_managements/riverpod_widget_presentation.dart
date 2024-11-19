@@ -20,11 +20,7 @@ class RiverpodWidgetConsumer extends riverpod.ConsumerWidget {
       ref.invalidate(fakeDataProvider);
     });
     final FakeData fakeData = ref.watch(fakeDataProvider);
-    return ListTile(
-      title: Text(fakeData.person.name()),
-      subtitle: Text(
-          '${fakeData.vehicle.model()} is worth ${Random().nextInt(100000)} ${fakeData.currency.code()}'),
-    );
+    return FakeDataListTile(fakeData: fakeData);
   }
 }
 
