@@ -13,17 +13,6 @@ final fakeDataProvider =
     riverpod.NotifierProvider<UpdateFakeDataNotifier, FakeData>(
         UpdateFakeDataNotifier.new);
 
-class RiverpodWidgetRender extends StatelessWidget {
-  const RiverpodWidgetRender({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return riverpod.ProviderScope(child: RiverpodWidgetConsumer());
-  }
-}
-
 class RiverpodWidgetConsumer extends riverpod.ConsumerWidget {
   @override
   Widget build(BuildContext context, riverpod.WidgetRef ref) {
@@ -36,5 +25,16 @@ class RiverpodWidgetConsumer extends riverpod.ConsumerWidget {
       subtitle: Text(
           '${fakeData.vehicle.model()} is worth ${Random().nextInt(100000)} ${fakeData.currency.code()}'),
     );
+  }
+}
+
+class RiverpodWidgetRender extends StatelessWidget {
+  const RiverpodWidgetRender({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return riverpod.ProviderScope(child: RiverpodWidgetConsumer());
   }
 }

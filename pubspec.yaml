@@ -43,6 +43,7 @@ dependencies:
   flutter_riverpod: ^2.6.1
   flutter_redux: ^0.10.0
   redux: ^5.0.0
+  june: ^1.0.0+1
 
 dev_dependencies:
   flutter_test:

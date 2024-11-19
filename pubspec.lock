@@ -131,6 +131,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  june:
+    dependency: "direct main"
+    description:
+      name: june
+      sha256: "87adaa1bf1008eec744f1e9d5566619d99dc6a41e8ef5ceb722dc62c27f636a0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0+1"
   leak_tracker:
     dependency: transitive
     description:
