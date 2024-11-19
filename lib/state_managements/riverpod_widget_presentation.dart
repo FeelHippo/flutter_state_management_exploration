@@ -27,6 +27,9 @@ class RiverpodWidgetRender extends StatelessWidget {
 class RiverpodWidgetConsumer extends riverpod.ConsumerWidget {
   @override
   Widget build(BuildContext context, riverpod.WidgetRef ref) {
+    Timer(const Duration(seconds: 5), () {
+      ref.invalidate(fakeDataProvider);
+    });
     final FakeData fakeData = ref.watch(fakeDataProvider);
     return ListTile(
       title: Text(fakeData.person.name()),
