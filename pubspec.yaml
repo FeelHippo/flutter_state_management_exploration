@@ -41,6 +41,8 @@ dependencies:
   flutter_bloc: ^8.1.6
   riverpod: ^2.6.1
   flutter_riverpod: ^2.6.1
+  flutter_redux: ^0.10.0
+  redux: ^5.0.0
 
 dev_dependencies:
   flutter_test:

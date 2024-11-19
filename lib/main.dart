@@ -5,13 +5,16 @@ import 'package:equatable/equatable.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 import 'package:provider/provider.dart';
+import 'package:redux/redux.dart';
 
 part 'state_managements/bloc_widget_presentation.dart';
 part 'state_managements/cubit_widget_presentation.dart';
 part 'state_managements/inherited_widget_presentation.dart';
 part 'state_managements/provider_widget_presentation.dart';
+part 'state_managements/redux_widget_presentation.dart';
 part 'state_managements/riverpod_widget_presentation.dart';
 
 void main() {
@@ -67,6 +70,7 @@ class StateManagementList extends StatelessWidget {
       const CubitWidgetRender(),
       const BlocWidgetRender(),
       const RiverpodWidgetRender(),
+      const ReduxWidgetRender(),
     ];
     return ListView.builder(
       padding: const EdgeInsets.all(16),
