@@ -12,6 +12,7 @@
         <li><a href="#inherited-widget">InheritedWidget: where it all starts</a></li>
         <li><a href="#provider">Provider: wrap it up!</a></li>
         <li><a href="#cubit">Cubit: keep it simple, stupid.</a></li>
+        <li><a href="#bloc">Bloc: all you need</a></li>
       </ul>
     </li>
   </ol>
@@ -87,7 +88,7 @@ By looking at the [GitHub repository](https://github.com/rrousselGit/provider/tr
 
 [Cubit](https://bloclibrary.dev/bloc-concepts/#cubit) is "a class which extends BlocBase and can be extended to manage any type of state."
 
-Doesn't help much, doesn't it. Let's try to come up with the best possible definition of a Cubit. 
+Doesn't help much, doesn't it. Let's try to come up with the best possible definition of a [Cubit](https://github.com/felangel/bloc/blob/841651f6901d3f7817ac8a47d4a2162606dd794c/packages/bloc/lib/src/cubit.dart#L3). 
 Funny, or maybe not, story, I recently absolutely botched the final interview for a dream job on the following question:
 
 `can you provide an exhaustive definition of Cubit?`. That's it. That was my task to make $$$$$$.
@@ -113,5 +114,47 @@ Something like that. On top of that, it also exposes a `Stream`, which allows to
 If you are familiar with Bloc, you will recognize some of the defining traits. 
 The main difference, I would argue, is the lack of an out of the box way to "use" a Cubit, such as events, state emitters, a well defined consumer, provider or builder. 
 That's all taken care of by ...
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- BLOC -->
+### Bloc: all you need
+
+Now, Cubit is cool and all. It "can" be used to build a full scale application.
+However, you'd soon regret your life choices.
+Cubits are meant for very simple data with basically no state flow logic at all. Like an int. Or maybe a DarkTheme/LightTheme switch.
+You'd need to instantiate cubits all over the place, figure out how to trigger the event methods, how to react to state changes, etc etc
+
+This is where Bloc shines. 
+
+The official definition is intimidating, in that it uses more than 5 words:
+```
+A Bloc is a more advanced class which relies on events to trigger state changes rather than functions.
+Bloc also extends BlocBase which means it has a similar public API as Cubit.
+However, rather than calling a function on a Bloc and directly emitting a new state, 
+Blocs receive events and convert the incoming events into outgoing states.
+```
+
+For illiterate donkeys like me:
+
+- a Bloc is a `Stream`, that listens for `Events` in response to which it emits a `State`
+  - a Bloc needs to be instantiated once,
+  - it will then be available in its sub tree
+- trigger a change? `event`
+- update data? `state`
+- consume data and react to a change?
+  - [BlocListener](https://github.com/felangel/bloc/blob/841651f6901d3f7817ac8a47d4a2162606dd794c/packages/flutter_bloc/lib/src/bloc_listener.dart#L15) if you want to "do" anything in response to `state` changes such as navigation
+  - [BlocBuilder](https://github.com/felangel/bloc/blob/841651f6901d3f7817ac8a47d4a2162606dd794c/packages/flutter_bloc/lib/src/bloc_builder.dart) for building a widget in response to new `states`
+  - [BlocConsumer](https://github.com/felangel/bloc/blob/841651f6901d3f7817ac8a47d4a2162606dd794c/packages/flutter_bloc/lib/src/bloc_consumer.dart) for a combination of the above. 
+
+I think of it as my local Pizza Chef, Luigi. 
+When his application (the pizzeria) is open, up and running, he's there waiting for calls, possibly consuming questionable content from questionable web sites, but that is not our business. 
+When I give him a call, I emit an `Event` for an order. Ring Ring! "Luigi's! What do I gett'ya?". "A pineapple pine and apple pizza, please.".
+He then processed the order, possibly asynchronously calling the ingredients, converting them from DTO into a repository level model. Pack the whole thing into a questionable box.
+The data is now ready, it's time to ship it. His brother, Gianmarialuigi, delivers my order to me, at which point I can update my `State`, and I immediately react to those changes by consuming my pizza.
+
+That's it. This is Bloc. 
+Of course, before you can get up to speed, you need to decide how to inject blocs into your application, find the right place to instantiate them, establish a clear patterns that can be replicated, define error handling, observation, etc etc. 
+I have got you covered, I have a few examples [here](https://github.com/FeelHippo/stadtplan_mobile_app/tree/main/lib/presentation)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
