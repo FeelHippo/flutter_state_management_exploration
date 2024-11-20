@@ -10,7 +10,10 @@ class FakeDataModel extends ChangeNotifier {
     currency: Currency(random),
   );
 
-  Widget get listTile => FakeDataListTile(fakeData: _fakeData);
+  Widget get listTile => FakeDataListTile(
+        fakeData: _fakeData,
+        source: 'P',
+      );
 
   void update() {
     _fakeData = FakeData(

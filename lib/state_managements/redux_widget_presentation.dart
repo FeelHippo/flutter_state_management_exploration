@@ -29,7 +29,10 @@ class ReduxWidgetPresentation extends StatelessWidget {
         return store.state;
       },
       builder: (BuildContext context, FakeData fakeData) {
-        return FakeDataListTile(fakeData: fakeData);
+        return FakeDataListTile(
+          fakeData: fakeData,
+          source: 'R',
+        );
       },
     );
   }

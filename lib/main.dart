@@ -70,7 +70,6 @@ class StateManagementList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Faker faker = Faker();
     final List<Widget> items = <Widget>[
       const InheritedWidgetPresentationWidget(),
       const ProviderWidgetRender(),
@@ -81,12 +80,27 @@ class StateManagementList extends StatelessWidget {
       const JuneWidgetConsumer(),
       const MobWidgetRender(),
     ];
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: items.length,
-      itemBuilder: (BuildContext context, int index) {
-        return items[index];
-      },
+    return CustomScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      slivers: [
+        SliverFillRemaining(
+          fillOverscroll: true,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ListView.builder(
+                padding: const EdgeInsets.all(32),
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount: items.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return items[index];
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

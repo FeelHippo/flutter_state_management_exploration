@@ -20,7 +20,10 @@ class RiverpodWidgetConsumer extends riverpod.ConsumerWidget {
       ref.invalidate(fakeDataProvider);
     });
     final FakeData fakeData = ref.watch(fakeDataProvider);
-    return FakeDataListTile(fakeData: fakeData);
+    return FakeDataListTile(
+      fakeData: fakeData,
+      source: 'RP',
+    );
   }
 }
 

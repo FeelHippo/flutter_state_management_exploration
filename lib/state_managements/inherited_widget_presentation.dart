@@ -89,7 +89,10 @@ class InheritedWidgetRender extends StatelessWidget {
   Widget build(BuildContext context) {
     final FakeData? fakeData = InheritedWidgetData.of(context)?.fakeData;
     return fakeData != null
-        ? FakeDataListTile(fakeData: fakeData,)
+        ? FakeDataListTile(
+            fakeData: fakeData,
+            source: 'I',
+          )
         : Container();
   }
 }
