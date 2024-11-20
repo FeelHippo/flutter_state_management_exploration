@@ -13,6 +13,9 @@
         <li><a href="#provider">Provider: wrap it up!</a></li>
         <li><a href="#cubit">Cubit: keep it simple, stupid.</a></li>
         <li><a href="#bloc">Bloc: all you need</a></li>
+        <li><a href="#riverpod">Riverpod: mixed feelings</a></li>
+        <li><a href="#june">June: uhm, what?</a></li>
+        <li><a href="#mobx">Mobx: there's no one else like me</a></li>
       </ul>
     </li>
   </ol>
@@ -150,11 +153,65 @@ For illiterate donkeys like me:
 I think of it as my local Pizza Chef, Luigi. 
 When his application (the pizzeria) is open, up and running, he's there waiting for calls, possibly consuming questionable content from questionable web sites, but that is not our business. 
 When I give him a call, I emit an `Event` for an order. Ring Ring! "Luigi's! What do I gett'ya?". "A pineapple pine and apple pizza, please.".
-He then processed the order, possibly asynchronously calling the ingredients, converting them from DTO into a repository level model. Pack the whole thing into a questionable box.
+He then processes the order, possibly asynchronously calling the ingredients, converting them from DTO into a repository level model. Pack the whole thing into a questionable box.
 The data is now ready, it's time to ship it. His brother, Gianmarialuigi, delivers my order to me, at which point I can update my `State`, and I immediately react to those changes by consuming my pizza.
 
 That's it. This is Bloc. 
 Of course, before you can get up to speed, you need to decide how to inject blocs into your application, find the right place to instantiate them, establish a clear patterns that can be replicated, define error handling, observation, etc etc. 
 I have got you covered, I have a few examples [here](https://github.com/FeelHippo/stadtplan_mobile_app/tree/main/lib/presentation)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- RIVERPOD -->
+### Riverpod: mixed feelings
+
+I have very mixed feeling about Riverpod. As mentioned above, I am a big Bloc fanboi. 
+Now, if you take a quick look at the two components in the `./state_managements` folder, you will notice that:
+- Riverpod, for simple applications, is way more concise: 39 lines of code vs. 117 for Bloc
+- it works in a symmetrical way to Bloc:
+  - Bloc: inside your presentational component, you use a consumer to react to state changes to a bloc, which was instantiated and injected up the widget tree. 
+  - Riverpod: up the widget tree you wrap the subtree in a `ProviderScope` widget, inside of which all `ConsumerWidget`s have access to the `WidgetRef`, which is a wrapper for the state.  
+- the way in which `ref` can be watched or listened, in my own personal opinion, feels flimsy and inconsistent, compared to Bloc's Events. 
+- you would expect that to result in less boilerplate, but once you start digging into the docs, oh my. I would not choose Riverpod for large scale apps.
+- it is not very opinionated when it comes to overall architecture, but makes things more zigzaggy than Bloc. [Andrea Bizzotto](https://codewithandrea.com/articles/flutter-app-architecture-riverpod-introduction/) is a Riverpod contributor, and probably the best at explaining Flutter thingies. 
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- JUNE -->
+### June: uhm, what?
+
+The best I can do here, is to copy paste the description from Flutter's docs: 
+
+```
+A lightweight and modern state management library that focuses on providing a pattern similar to Flutter's built-in state management.
+```
+
+Lightweight? OK. The snippet in this project is probably the shortest, ex aequo with Riverpod. 
+It's also the one that I could not make work for the love of my life. It's supposed to be "declare your state and call setState to update the UI".
+No way to make it work. 
+
+After flipping stupp around for a while, and try each and every pattern from the docs, the very last (of course...) made it update the listTile. 
+Which, in my opinion, should be easier. 
+
+I don't know, if I were to choose a state management strategy for something this simple, I would still prefer Cubit. 
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- MOBX -->
+### Mobx: there's no one else like me
+
+```
+MobX is a state-management library that makes it simple to connect the reactive data of your application with the UI.
+This wiring is completely automatic and feels very natural. As the application-developer, 
+you focus purely on what reactive-data needs to be consumed in the UI (and elsewhere) without worrying about keeping the two in sync.
+
+It's not really magic but it does have some smarts around what is being consumed (observables) and where (reactions), 
+and automatically tracks it for you. When the observables change, all reactions are re-run. 
+What's interesting is that these reactions can be anything from a simple console log, a network call to re-rendering the UI.
+```
+
+The "Start Guide" is written in JavaScript. We are, however, reassured that `the concepts are 100% applicable to Dart and Flutter`.
+
+`event.stopPropagation()` to my applications, as far as I am concerned. 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
