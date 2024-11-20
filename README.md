@@ -50,7 +50,7 @@ I therefore decided to create this little project, for the sole purpose of compa
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- INHERITED WIDGET -->
-### InheritedWidget: where it all starts
+### Inherited Widget
 
 [Inherited Widget Class](https://api.flutter.dev/flutter/widgets/InheritedWidget-class.html) is the basic building bloc of state management in Flutter. 
 [In one of my previous weekend projects](https://github.com/FeelHippo/JavascriptNinjaSkills/blob/main/flutter/example_inherited_widget_usage.dart) you can find a break down of all the bits and pieces that make this class work, including BuildContext Element, and InheritedElement.
@@ -69,7 +69,7 @@ And this is it. That is how state management works in Flutter. If the Widget's a
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- PROVIDER -->
-### Provider: wrap it up!
+### Provider
 
 [The Provider Package](https://pub.dev/packages/provider) is "a wrapper around InheritedWidget to make them easier to use and more reusable."
 By looking at the [GitHub repository](https://github.com/rrousselGit/provider/tree/master), one can see the advantages over an InheritedWidget:
@@ -87,7 +87,7 @@ By looking at the [GitHub repository](https://github.com/rrousselGit/provider/tr
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CUBIT -->
-### Cubit: keep it simple, stupid.
+### Cubit
 
 [Cubit](https://bloclibrary.dev/bloc-concepts/#cubit) is "a class which extends BlocBase and can be extended to manage any type of state."
 
@@ -121,7 +121,7 @@ That's all taken care of by ...
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- BLOC -->
-### Bloc: all you need
+### Bloc
 
 Now, Cubit is cool and all. It "can" be used to build a full scale application.
 However, you'd soon regret your life choices.
@@ -163,7 +163,7 @@ I have got you covered, I have a few examples [here](https://github.com/FeelHipp
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- RIVERPOD -->
-### Riverpod: mixed feelings
+### Riverpod
 
 I have very mixed feeling about Riverpod. As mentioned above, I am a big Bloc fanboi. 
 Now, if you take a quick look at the two components in the `./state_managements` folder, you will notice that:
@@ -178,7 +178,7 @@ Now, if you take a quick look at the two components in the `./state_managements`
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- JUNE -->
-### June: uhm, what?
+### June
 
 The best I can do here, is to copy paste the description from Flutter's docs: 
 
@@ -190,7 +190,7 @@ Lightweight? OK. The snippet in this project is probably the shortest, ex aequo 
 It's also the one that I could not make work for the love of my life. It's supposed to be "declare your state and call setState to update the UI".
 No way to make it work. 
 
-After flipping stupp around for a while, and try each and every pattern from the docs, the very last (of course...) made it update the listTile. 
+After flipping stuff around for a while, and try each and every pattern from the docs, the very last (of course...) made it update the listTile. 
 Which, in my opinion, should be easier. 
 
 I don't know, if I were to choose a state management strategy for something this simple, I would still prefer Cubit. 
@@ -198,7 +198,7 @@ I don't know, if I were to choose a state management strategy for something this
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MOBX -->
-### Mobx: there's no one else like me
+### Mobx
 
 ```
 MobX is a state-management library that makes it simple to connect the reactive data of your application with the UI.
