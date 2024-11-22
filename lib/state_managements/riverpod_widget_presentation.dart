@@ -34,6 +34,8 @@ class RiverpodWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Timeline.startSync('Riverpod');
+    WidgetsBinding.instance.addPostFrameCallback((_) => Timeline.finishSync());
     return riverpod.ProviderScope(child: RiverpodWidgetConsumer());
   }
 }

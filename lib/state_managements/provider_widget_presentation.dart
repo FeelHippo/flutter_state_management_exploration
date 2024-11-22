@@ -76,6 +76,8 @@ class ProviderWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Timeline.startSync('Provider');
+    WidgetsBinding.instance.addPostFrameCallback((_) => Timeline.finishSync());
     return ChangeNotifierProvider(
       create: (_) => FakeDataModel(),
       // Consumer allows to access the provider of <FakeDataModel>

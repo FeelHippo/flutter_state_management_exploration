@@ -227,6 +227,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.0"
+  performance:
+    dependency: "direct main"
+    description:
+      path: "packages/performance"
+      relative: true
+    source: path
+    version: "1.0.0+1"
   provider:
     dependency: "direct main"
     description:

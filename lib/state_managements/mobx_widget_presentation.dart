@@ -37,6 +37,8 @@ class MobWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Timeline.startSync('MobX');
+    WidgetsBinding.instance.addPostFrameCallback((_) => Timeline.finishSync());
     var state = FakeDataMobXState();
     Timer.periodic(const Duration(seconds: 5), (timer) {
       state.update();

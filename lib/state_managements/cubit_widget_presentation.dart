@@ -73,6 +73,8 @@ class CubitWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Timeline.startSync('Cubit');
+    WidgetsBinding.instance.addPostFrameCallback((_) => Timeline.finishSync());
     // It is used as a dependency injection (DI) widget so that a single
     // instance of a Cubit can be provided to multiple widgets within a subtree.
     return BlocProvider(

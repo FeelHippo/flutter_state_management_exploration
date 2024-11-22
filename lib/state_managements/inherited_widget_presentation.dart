@@ -87,6 +87,8 @@ class InheritedWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Timeline.startSync('InheritedWidget');
+    WidgetsBinding.instance.addPostFrameCallback((_) => Timeline.finishSync());
     final FakeData? fakeData = InheritedWidgetData.of(context)?.fakeData;
     return fakeData != null
         ? FakeDataListTile(
