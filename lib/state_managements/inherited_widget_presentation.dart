@@ -42,7 +42,6 @@ class _InheritedWidgetPresentationWidgetState
   @override
   void initState() {
     super.initState();
-
     // init state
     _fakeData = FakeData(
       person: Person(random),
@@ -87,8 +86,14 @@ class InheritedWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Timeline.startSync('InheritedWidget');
-    WidgetsBinding.instance.addPostFrameCallback((_) => Timeline.finishSync());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        // timelineEvent will be calculated in here
+        // ideally InheritedWidgetData.of(context)?.fakeData
+        InheritedWidgetData.of(context)?.fakeData;
+      },
+      debugLabel: 'Inherited',
+    );
     final FakeData? fakeData = InheritedWidgetData.of(context)?.fakeData;
     return fakeData != null
         ? FakeDataListTile(

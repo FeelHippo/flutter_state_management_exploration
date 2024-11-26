@@ -43,8 +43,10 @@ class ReduxWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Timeline.startSync('Redux');
-    WidgetsBinding.instance.addPostFrameCallback((_) => Timeline.finishSync());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {},
+      debugLabel: 'Redux',
+    );
     final store = Store<FakeData>(
       updateReducer,
       initialState: FakeData(

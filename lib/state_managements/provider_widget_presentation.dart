@@ -43,7 +43,6 @@ class _ProviderWidgetPresentationWidgetState
   @override
   void initState() {
     super.initState();
-
     // when _fakeData is updated, only the widgets that depend on it will be rebuilt,
     // which makes the application more efficient and performant.
     timer = Timer.periodic(
@@ -76,14 +75,26 @@ class ProviderWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Timeline.startSync('Provider');
-    WidgetsBinding.instance.addPostFrameCallback((_) => Timeline.finishSync());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        // timelineEvent will be calculated in here
+        // ideally Consumer<FakeDataModel>(builder: ...
+        Consumer<FakeDataModel>(
+          builder: (context, fakeDataModel, child) {
+            return ProviderWidgetPresentation(fakeDataModel: fakeDataModel);
+          },
+        );
+      },
+      debugLabel: 'Provider',
+    );
     return ChangeNotifierProvider(
       create: (_) => FakeDataModel(),
       // Consumer allows to access the provider of <FakeDataModel>
-      child: Consumer<FakeDataModel>(builder: (context, fakeDataModel, child) {
-        return ProviderWidgetPresentation(fakeDataModel: fakeDataModel);
-      }),
+      child: Consumer<FakeDataModel>(
+        builder: (context, fakeDataModel, child) {
+          return ProviderWidgetPresentation(fakeDataModel: fakeDataModel);
+        },
+      ),
     );
   }
 }

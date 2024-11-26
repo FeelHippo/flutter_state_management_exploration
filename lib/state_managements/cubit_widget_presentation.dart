@@ -37,7 +37,6 @@ class _CubitWidgetPresentationWidgetState
   @override
   void initState() {
     super.initState();
-
     // when _fakeData is updated, only the widgets that depend on it will be rebuilt,
     // which makes the application more efficient and performant.
     timer = Timer.periodic(
@@ -73,8 +72,19 @@ class CubitWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Timeline.startSync('Cubit');
-    WidgetsBinding.instance.addPostFrameCallback((_) => Timeline.finishSync());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        // timelineEvent will be calculated in here
+        // ideally BlocBuilder<FakeDataCubit, FakeData>(builder: ...
+        BlocBuilder<FakeDataCubit, FakeData>(
+          builder: (BuildContext context, FakeData fakeData) {
+            // fakeData is the updated state
+            return CubitWidgetPresentation(fakeData: fakeData);
+          },
+        );
+      },
+      debugLabel: 'Cubit',
+    );
     // It is used as a dependency injection (DI) widget so that a single
     // instance of a Cubit can be provided to multiple widgets within a subtree.
     return BlocProvider(

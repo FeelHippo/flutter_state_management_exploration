@@ -42,7 +42,8 @@ void main() async {
   try {
     await shell.run(
       '''
-    flutter run --profile
+    flutter pub get
+    flutter run --debug
   ''',
     );
   } on ShellException catch (e) {
@@ -52,7 +53,7 @@ void main() async {
 
 Future<void> webSocketChannel(String uri) async {
   const allTimelineEvents = [
-    'InheritedWidget',
+    'Inherited',
     'Provider',
     'Cubit',
     'Bloc',
@@ -61,65 +62,61 @@ Future<void> webSocketChannel(String uri) async {
     'June',
     'MobX'
   ];
-  List<Data> result = List.generate(
-    allTimelineEvents.length - 1,
-    (index) => Data(
-      name: allTimelineEvents[index],
-      count: 0,
-      average: 0.0,
-    ),
-  );
+  List<Data> result = allTimelineEvents
+      .map(
+        (timelineEvent) => Data(
+          name: timelineEvent,
+          count: 0,
+          average: 0.0,
+        ),
+      )
+      .toList();
   final WebSocketChannel channel = WebSocketChannel.connect(Uri.parse(uri));
 
   await channel.ready;
 
-  [
-    '{"jsonrpc": "2.0","id": "1","method": "setFlag","params": {"name": "pause_isolates_on_start","value": "true"}}',
-    '{"jsonrpc": "2.0","id": "2","method": "requirePermissionToResume","params": {"onPauseStart": true,"onPauseReload": false,"onPauseExit": false}}',
-    '{"jsonrpc": "2.0","id": "3","method": "getVM","params": {}}',
-    '{"jsonrpc": "2.0","id": "4","method": "getStreamHistory","params": {"stream": "Extension"}}',
-    '{"jsonrpc": "2.0","id": "5","method": "getStreamHistory","params": {"stream": "Stderr"}}',
+  for (var message in [
+    '{"jsonrpc": "2.0","id": "1","method": "getVM","params": {}}',
     ...[
       'Debug',
-      'Extension',
-      'GC',
-      'Isolate',
-      'Logging',
-      'Stderr',
-      'Stdout',
       'Timeline',
       'VM',
-      'Service',
-    ]
-        .asMap()
-        .entries
-        .map((stream) =>
-            '{"jsonrpc": "2.0","id": "${stream.key + 6}","method": "streamListen","params": {"streamId": "${stream.value}"}}')
-        .toList(),
-  ].forEach((message) => channel.sink.add(message));
+    ].asMap().entries.map(
+          (stream) =>
+              '{"jsonrpc": "2.0","id": "${stream.key + 1}","method": "streamListen","params": {"streamId": "${stream.value}"}}',
+        ),
+  ]) {
+    channel.sink.add(message);
+  }
 
   channel.stream.listen(
     (message) {
       final decodedJson = jsonDecode(message);
       if (decodedJson?['result']?['type'] == 'VM') {
-        channel.sink.add(
-            '{"jsonrpc": "2.0","id": "20","method": "getIsolate","params": {"isolateId": "${decodedJson['result']['isolates'].first['id']}"}}');
+        final String isolateId = decodedJson['result']['isolates'].first['id'];
+        Timer.periodic(const Duration(seconds: 5), (timer) {
+          channel.sink.add(
+            '{"jsonrpc": "2.0","id": "99","method": "getIsolate","params": {"isolateId": "$isolateId"}}',
+          );
+        });
       }
 
-      if (decodedJson?['params']?['event']?['timelineEvents']?.runtimeType ==
-          List<dynamic>) {
-        print('||| ${decodedJson?['params']?['event']?['timelineEvents']} |||');
-        final Iterable<dynamic> timeLineEvent =
-            decodedJson?['params']?['event']?['timelineEvents'].where(
-          (event) => allTimelineEvents.contains(
-            event['name'],
+      if (decodedJson?['params']?['event']?['kind'] == 'TimelineEvents') {
+        Iterable<dynamic> timeLineEvents =
+            decodedJson?['params']?['event']?['timelineEvents'];
+        var relevantTimelineEvents = timeLineEvents.where(
+          (timeLineEvent) => allTimelineEvents.any(
+            (timelineName) => timeLineEvent['name'].contains(
+              timelineName,
+            ),
           ),
         );
-        if (timeLineEvent.isNotEmpty) {
-          final start = timeLineEvent.first;
-          final end = timeLineEvent.last;
-          final diff = end['ts'] - start['ts'];
-          final name = start['name'];
+        if (relevantTimelineEvents.isNotEmpty) {
+          print('~~~  $relevantTimelineEvents');
+          var start = relevantTimelineEvents.first;
+          var end = relevantTimelineEvents.last;
+          var diff = end['ts'] - start['ts'];
+          var name = start['name'];
           result = result
               .map(
                 (Data data) => data.name == name
@@ -136,7 +133,7 @@ Future<void> webSocketChannel(String uri) async {
   );
 
   Timer(
-    const Duration(minutes: 1),
+    const Duration(minutes: 4),
     () {
       channel.sink.close();
       for (var data in result) {

@@ -73,7 +73,6 @@ class _BlocWidgetPresentationWidgetState extends State<BlocWidgetPresentation> {
   @override
   void initState() {
     super.initState();
-
     // when _fakeData is updated, only the widgets that depend on it will be rebuilt,
     // which makes the application more efficient and performant.
     _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
@@ -101,8 +100,19 @@ class BlocWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Timeline.startSync('Bloc');
-    WidgetsBinding.instance.addPostFrameCallback((_) => Timeline.finishSync());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        // timelineEvent will be calculated in here
+        // ideally BlocBuilder<FakeDataCubit, FakeData>(builder: ...
+        BlocBuilder<FakeDataBloc, FakeDataState>(
+          builder: (BuildContext context, FakeDataState state) {
+            // fakeData is the updated state
+            return BlocWidgetPresentation(fakeData: state.fakeData);
+          },
+        );
+      },
+      debugLabel: 'Bloc',
+    );
     // It is used as a dependency injection (DI) widget so that a single
     // instance of a Bloc can be provided to multiple widgets within a subtree.
     return BlocProvider(
