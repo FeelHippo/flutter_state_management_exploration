@@ -101,16 +101,12 @@ class BlocWidgetRender extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        // timelineEvent will be calculated in here
-        // ideally BlocBuilder<FakeDataCubit, FakeData>(builder: ...
-        BlocBuilder<FakeDataBloc, FakeDataState>(
-          builder: (BuildContext context, FakeDataState state) {
-            // fakeData is the updated state
-            return BlocWidgetPresentation(fakeData: state.fakeData);
-          },
-        );
-      },
+      (_) => BlocBuilder<FakeDataBloc, FakeDataState>(
+        builder: (BuildContext context, FakeDataState state) {
+          // fakeData is the updated state
+          return BlocWidgetPresentation(fakeData: state.fakeData);
+        },
+      ),
       debugLabel: 'Bloc',
     );
     // It is used as a dependency injection (DI) widget so that a single

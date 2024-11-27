@@ -73,16 +73,12 @@ class CubitWidgetRender extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        // timelineEvent will be calculated in here
-        // ideally BlocBuilder<FakeDataCubit, FakeData>(builder: ...
-        BlocBuilder<FakeDataCubit, FakeData>(
-          builder: (BuildContext context, FakeData fakeData) {
-            // fakeData is the updated state
-            return CubitWidgetPresentation(fakeData: fakeData);
-          },
-        );
-      },
+      (_) => BlocBuilder<FakeDataCubit, FakeData>(
+        builder: (BuildContext context, FakeData fakeData) {
+          // fakeData is the updated state
+          return CubitWidgetPresentation(fakeData: fakeData);
+        },
+      ),
       debugLabel: 'Cubit',
     );
     // It is used as a dependency injection (DI) widget so that a single

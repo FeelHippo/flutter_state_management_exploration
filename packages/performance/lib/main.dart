@@ -77,13 +77,18 @@ Future<void> webSocketChannel(String uri) async {
 
   for (var message in [
     '{"jsonrpc": "2.0","id": "1","method": "getVM","params": {}}',
+    '{"jsonrpc": "2.0","id": "2","method": "getStreamHistory","params": {"stream": "Extension"}}',
+    '{"jsonrpc": "2.0","id": "3","method": "getStreamHistory","params": {"stream": "Stderr"}}',
     ...[
       'Debug',
+      'GC',
+      'Isolate',
+      'Stdout',
       'Timeline',
       'VM',
     ].asMap().entries.map(
           (stream) =>
-              '{"jsonrpc": "2.0","id": "${stream.key + 1}","method": "streamListen","params": {"streamId": "${stream.value}"}}',
+              '{"jsonrpc": "2.0","id": "${stream.key + 4}","method": "streamListen","params": {"streamId": "${stream.value}"}}',
         ),
   ]) {
     channel.sink.add(message);
@@ -91,14 +96,36 @@ Future<void> webSocketChannel(String uri) async {
 
   channel.stream.listen(
     (message) {
+      var countId = 10;
       final decodedJson = jsonDecode(message);
       if (decodedJson?['result']?['type'] == 'VM') {
         final String isolateId = decodedJson['result']['isolates'].first['id'];
-        Timer.periodic(const Duration(seconds: 5), (timer) {
-          channel.sink.add(
-            '{"jsonrpc": "2.0","id": "99","method": "getIsolate","params": {"isolateId": "$isolateId"}}',
-          );
-        });
+        Timer.periodic(
+          const Duration(milliseconds: 100),
+          (timer) {
+            // maybe? https://api.flutter.dev/flutter/vm_service/VmService/getVMTimeline.html
+            channel.sink.add(
+              '{"jsonrpc": "2.0","id": "$countId","method": "getIsolate","params": {"isolateId": "$isolateId"}}',
+            );
+            countId += 1;
+            channel.sink.add(
+              '{"jsonrpc": "2.0","id": "$countId","method": "ext.dart.io.httpEnableTimelineLogging","params": {"isolateId": "$isolateId"}}',
+            );
+            countId += 1;
+            channel.sink.add(
+              '{"jsonrpc": "2.0","id": "$countId","method": "setVMTimelineFlags","params": {"recordedStreams": ["Dart","Embedder","GC"]}}',
+            );
+            countId += 1;
+            channel.sink.add(
+              '{"jsonrpc": "2.0","id": "$countId","method": "getVMTimelineMicros","params": {}}',
+            );
+            countId += 1;
+            channel.sink.add(
+              '{"jsonrpc": "2.0","id": "$countId","method": "getVMTimelineFlags","params": {}}',
+            );
+            countId += 1;
+          },
+        );
       }
 
       if (decodedJson?['params']?['event']?['kind'] == 'TimelineEvents') {
@@ -111,8 +138,10 @@ Future<void> webSocketChannel(String uri) async {
             ),
           ),
         );
-        if (relevantTimelineEvents.isNotEmpty) {
-          print('~~~  $relevantTimelineEvents');
+        print('~~~  $relevantTimelineEvents');
+        if (relevantTimelineEvents.isNotEmpty &&
+            relevantTimelineEvents.length >= allTimelineEvents.length) {
+          // FIX THE BELOW, you should group relevantTimelineEvents in tuples, by name
           var start = relevantTimelineEvents.first;
           var end = relevantTimelineEvents.last;
           var diff = end['ts'] - start['ts'];

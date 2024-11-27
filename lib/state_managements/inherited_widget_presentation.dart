@@ -87,11 +87,7 @@ class InheritedWidgetRender extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        // timelineEvent will be calculated in here
-        // ideally InheritedWidgetData.of(context)?.fakeData
-        InheritedWidgetData.of(context)?.fakeData;
-      },
+      (_) => InheritedWidgetData.of(context)?.fakeData,
       debugLabel: 'Inherited',
     );
     final FakeData? fakeData = InheritedWidgetData.of(context)?.fakeData;

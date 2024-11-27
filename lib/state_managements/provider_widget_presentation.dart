@@ -76,15 +76,11 @@ class ProviderWidgetRender extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        // timelineEvent will be calculated in here
-        // ideally Consumer<FakeDataModel>(builder: ...
-        Consumer<FakeDataModel>(
-          builder: (context, fakeDataModel, child) {
-            return ProviderWidgetPresentation(fakeDataModel: fakeDataModel);
-          },
-        );
-      },
+      (_) => Consumer<FakeDataModel>(
+        builder: (context, fakeDataModel, child) {
+          return ProviderWidgetPresentation(fakeDataModel: fakeDataModel);
+        },
+      ),
       debugLabel: 'Provider',
     );
     return ChangeNotifierProvider(
