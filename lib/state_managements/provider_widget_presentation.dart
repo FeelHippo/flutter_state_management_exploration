@@ -49,7 +49,9 @@ class _ProviderWidgetPresentationWidgetState
       const Duration(seconds: 5),
       (_) {
         setState(() {
+          Timeline.startSync('Provider');
           widget.fakeDataModel.update();
+          Timeline.finishSync();
         });
       },
     );
@@ -57,7 +59,6 @@ class _ProviderWidgetPresentationWidgetState
 
   @override
   void dispose() {
-    timer.cancel();
     super.dispose();
   }
 
@@ -75,14 +76,6 @@ class ProviderWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => Consumer<FakeDataModel>(
-        builder: (context, fakeDataModel, child) {
-          return ProviderWidgetPresentation(fakeDataModel: fakeDataModel);
-        },
-      ),
-      debugLabel: 'Provider',
-    );
     return ChangeNotifierProvider(
       create: (_) => FakeDataModel(),
       // Consumer allows to access the provider of <FakeDataModel>

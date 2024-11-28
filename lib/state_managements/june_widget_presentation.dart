@@ -23,13 +23,11 @@ class JuneWidgetConsumer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {},
-      debugLabel: 'June',
-    );
     Timer.periodic(const Duration(seconds: 5), (timer) {
       // Update the states using the setState method
+      Timeline.startSync('June');
       June.getState(() => FakeDataJuneState()).update();
+      Timeline.finishSync();
     });
     // The state management wraps the widget to be managed with JuneBuilder
     return JuneBuilder(

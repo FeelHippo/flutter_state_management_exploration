@@ -46,7 +46,9 @@ class _CubitWidgetPresentationWidgetState
           // find the nearest instance of the cubit
           // invoke the update method, which will result in a state update
           // the new state will be provided to the BlocBuilder below
+          Timeline.startSync('Cubit');
           context.read<FakeDataCubit>().update();
+          Timeline.finishSync();
         });
       },
     );
@@ -72,15 +74,6 @@ class CubitWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => BlocBuilder<FakeDataCubit, FakeData>(
-        builder: (BuildContext context, FakeData fakeData) {
-          // fakeData is the updated state
-          return CubitWidgetPresentation(fakeData: fakeData);
-        },
-      ),
-      debugLabel: 'Cubit',
-    );
     // It is used as a dependency injection (DI) widget so that a single
     // instance of a Cubit can be provided to multiple widgets within a subtree.
     return BlocProvider(

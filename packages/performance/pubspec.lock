@@ -9,14 +9,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.0"
-  async:
-    dependency: transitive
-    description:
-      name: async
-      sha256: d2872f9c19731c2e5f10444b14686eb7cc85c76274bd6c16e1816bff9a3bab63
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.12.0"
   collection:
     dependency: transitive
     description:
@@ -25,14 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
-  crypto:
-    dependency: transitive
+  fimber:
+    dependency: "direct main"
     description:
-      name: crypto
-      sha256: "1e445881f28f22d6140f181e07737b22f1e099a5e1ff94b0af2f9e4a463f4855"
+      name: fimber
+      sha256: "42fcfa33acd43556c1e7ebfc12c2b03893418bc04a07931368c3573e228af2f0"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.6"
+    version: "0.7.0"
   meta:
     dependency: transitive
     description:
@@ -73,14 +65,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.0"
-  stream_channel:
-    dependency: transitive
-    description:
-      name: stream_channel
-      sha256: ba2aa5d8cc609d96bbb2899c28934f9e1af5cddbd60a827822ea467161eb54e7
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.2"
   string_scanner:
     dependency: transitive
     description:
@@ -105,38 +89,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.1"
-  typed_data:
-    dependency: transitive
-    description:
-      name: typed_data
-      sha256: f9049c039ebfeb4cf7a7104a675823cd72dba8297f264b6637062516699fa006
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.4.0"
-  web:
-    dependency: transitive
-    description:
-      name: web
-      sha256: "97da13628db363c635202ad97068d47c5b8aa555808e7a9411963c533b449b27"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.5.1"
-  web_socket:
-    dependency: transitive
-    description:
-      name: web_socket
-      sha256: "3c12d96c0c9a4eec095246debcea7b86c0324f22df69893d538fcc6f1b8cce83"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.6"
-  web_socket_channel:
+  vm_service:
     dependency: "direct main"
     description:
-      name: web_socket_channel
-      sha256: "9f187088ed104edd8662ca07af4b124465893caf063ba29758f97af57e61da8f"
+      name: vm_service
+      sha256: "0968250880a6c5fe7edc067ed0a13d4bae1577fe2771dcf3010d52c4a9d3ca14"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.1"
+    version: "14.3.1"
   yaml:
     dependency: transitive
     description:

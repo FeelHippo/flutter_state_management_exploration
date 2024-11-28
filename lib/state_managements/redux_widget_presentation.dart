@@ -24,7 +24,9 @@ class ReduxWidgetPresentation extends StatelessWidget {
     return StoreConnector<FakeData, FakeData>(
       converter: (Store<FakeData> store) {
         Timer(const Duration(seconds: 5), () {
+          Timeline.startSync('Redux');
           store.dispatch(Actions.update);
+          Timeline.finishSync();
         });
         return store.state;
       },
@@ -43,10 +45,6 @@ class ReduxWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {},
-      debugLabel: 'Redux',
-    );
     final store = Store<FakeData>(
       updateReducer,
       initialState: FakeData(

@@ -25,17 +25,15 @@ class InheritedWidgetData extends InheritedWidget {
 
 /// wrapper for the inherited widget
 /// updates fake data every 5 seconds
-class InheritedWidgetPresentationWidget extends StatefulWidget {
-  const InheritedWidgetPresentationWidget({
+class InheritedWidgetRender extends StatefulWidget {
+  const InheritedWidgetRender({
     super.key,
   });
   @override
-  State<InheritedWidgetPresentationWidget> createState() =>
-      _InheritedWidgetPresentationWidgetState();
+  State<InheritedWidgetRender> createState() => _InheritedWidgetRenderState();
 }
 
-class _InheritedWidgetPresentationWidgetState
-    extends State<InheritedWidgetPresentationWidget> {
+class _InheritedWidgetRenderState extends State<InheritedWidgetRender> {
   late FakeData _fakeData;
   late Timer timer;
 
@@ -76,21 +74,19 @@ class _InheritedWidgetPresentationWidgetState
     return InheritedWidgetData(
       key: GlobalKey(),
       fakeData: _fakeData,
-      child: const InheritedWidgetRender(),
+      child: const InheritedWidgetPresentationWidget(),
     );
   }
 }
 
-class InheritedWidgetRender extends StatelessWidget {
-  const InheritedWidgetRender({super.key});
+class InheritedWidgetPresentationWidget extends StatelessWidget {
+  const InheritedWidgetPresentationWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => InheritedWidgetData.of(context)?.fakeData,
-      debugLabel: 'Inherited',
-    );
+    Timeline.startSync('Inherited');
     final FakeData? fakeData = InheritedWidgetData.of(context)?.fakeData;
+    Timeline.finishSync();
     return fakeData != null
         ? FakeDataListTile(
             fakeData: fakeData,

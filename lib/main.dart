@@ -72,7 +72,7 @@ class StateManagementList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Widget> items = <Widget>[
-      const InheritedWidgetPresentationWidget(),
+      const InheritedWidgetRender(),
       const ProviderWidgetRender(),
       const CubitWidgetRender(),
       const BlocWidgetRender(),

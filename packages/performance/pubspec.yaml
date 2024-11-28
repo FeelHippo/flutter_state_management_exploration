@@ -4,5 +4,6 @@ version: 1.0.0+1
 environment:
   sdk: ">=3.1.0 <4.0.0"
 dependencies:
+  fimber: ^0.7.0
   process_run: ^1.2.2
-  web_socket_channel: ^3.0.1
+  vm_service: ^14.3.1

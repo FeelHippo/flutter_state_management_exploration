@@ -1,8 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:fimber/fimber.dart';
 import 'package:process_run/process_run.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:vm_service/vm_service.dart';
+import 'package:vm_service/vm_service_io.dart';
+
+class StdoutLog extends Log {
+  @override
+  void warning(String message) => Fimber.w(message);
+
+  @override
+  void severe(String message) => Fimber.e(message);
+}
 
 class Data {
   Data({
@@ -26,7 +36,11 @@ class Data {
   }
 }
 
+late VmService serviceClient;
+
 void main() async {
+  Fimber.plantTree(DebugTree(useColors: true));
+
   var controller = ShellLinesController();
   var shell = Shell(workingDirectory: '../../../', stdout: controller.sink);
 
@@ -34,11 +48,11 @@ void main() async {
   controller.stream.listen((event) async {
     if (event.contains('uri=')) {
       final uri = event.split('uri=http://').last;
-      await webSocketChannel('ws://$uri/ws');
+      await vmServiceConnection('ws://$uri/ws', shell);
     }
   });
 
-  // run Flutter app in profile mode
+  // run Flutter app in debug mode
   try {
     await shell.run(
       '''
@@ -47,11 +61,11 @@ void main() async {
   ''',
     );
   } on ShellException catch (e) {
-    print(e);
+    Fimber.e(e.toString());
   }
 }
 
-Future<void> webSocketChannel(String uri) async {
+Future<void> vmServiceConnection(String uri, Shell shell) async {
   const allTimelineEvents = [
     'Inherited',
     'Provider',
@@ -71,103 +85,78 @@ Future<void> webSocketChannel(String uri) async {
         ),
       )
       .toList();
-  final WebSocketChannel channel = WebSocketChannel.connect(Uri.parse(uri));
 
-  await channel.ready;
+  Fimber.i('Dart process started.');
 
-  for (var message in [
-    '{"jsonrpc": "2.0","id": "1","method": "getVM","params": {}}',
-    '{"jsonrpc": "2.0","id": "2","method": "getStreamHistory","params": {"stream": "Extension"}}',
-    '{"jsonrpc": "2.0","id": "3","method": "getStreamHistory","params": {"stream": "Stderr"}}',
-    ...[
-      'Debug',
-      'GC',
-      'Isolate',
-      'Stdout',
-      'Timeline',
-      'VM',
-    ].asMap().entries.map(
-          (stream) =>
-              '{"jsonrpc": "2.0","id": "${stream.key + 4}","method": "streamListen","params": {"streamId": "${stream.value}"}}',
-        ),
-  ]) {
-    channel.sink.add(message);
-  }
-
-  channel.stream.listen(
-    (message) {
-      var countId = 10;
-      final decodedJson = jsonDecode(message);
-      if (decodedJson?['result']?['type'] == 'VM') {
-        final String isolateId = decodedJson['result']['isolates'].first['id'];
-        Timer.periodic(
-          const Duration(milliseconds: 100),
-          (timer) {
-            // maybe? https://api.flutter.dev/flutter/vm_service/VmService/getVMTimeline.html
-            channel.sink.add(
-              '{"jsonrpc": "2.0","id": "$countId","method": "getIsolate","params": {"isolateId": "$isolateId"}}',
-            );
-            countId += 1;
-            channel.sink.add(
-              '{"jsonrpc": "2.0","id": "$countId","method": "ext.dart.io.httpEnableTimelineLogging","params": {"isolateId": "$isolateId"}}',
-            );
-            countId += 1;
-            channel.sink.add(
-              '{"jsonrpc": "2.0","id": "$countId","method": "setVMTimelineFlags","params": {"recordedStreams": ["Dart","Embedder","GC"]}}',
-            );
-            countId += 1;
-            channel.sink.add(
-              '{"jsonrpc": "2.0","id": "$countId","method": "getVMTimelineMicros","params": {}}',
-            );
-            countId += 1;
-            channel.sink.add(
-              '{"jsonrpc": "2.0","id": "$countId","method": "getVMTimelineFlags","params": {}}',
-            );
-            countId += 1;
-          },
-        );
-      }
-
-      if (decodedJson?['params']?['event']?['kind'] == 'TimelineEvents') {
-        Iterable<dynamic> timeLineEvents =
-            decodedJson?['params']?['event']?['timelineEvents'];
-        var relevantTimelineEvents = timeLineEvents.where(
-          (timeLineEvent) => allTimelineEvents.any(
-            (timelineName) => timeLineEvent['name'].contains(
-              timelineName,
-            ),
-          ),
-        );
-        print('~~~  $relevantTimelineEvents');
-        if (relevantTimelineEvents.isNotEmpty &&
-            relevantTimelineEvents.length >= allTimelineEvents.length) {
-          // FIX THE BELOW, you should group relevantTimelineEvents in tuples, by name
-          var start = relevantTimelineEvents.first;
-          var end = relevantTimelineEvents.last;
-          var diff = end['ts'] - start['ts'];
-          var name = start['name'];
-          result = result
-              .map(
-                (Data data) => data.name == name
-                    ? data.copyWith(
-                        data.count + 1,
-                        diff,
-                      )
-                    : data,
-              )
-              .toList();
-        }
-      }
-    },
+  serviceClient = await vmServiceConnectUri(
+    uri,
+    log: StdoutLog(),
   );
 
-  Timer(
-    const Duration(minutes: 4),
-    () {
-      channel.sink.close();
-      for (var data in result) {
-        print('||| ${data.name}: ${data.average} |||');
+  Fimber.i('VM service web socket connected.');
+
+  serviceClient.onSend.listen((message) => Fimber.d('message: $message'));
+
+  serviceClient.onReceive.listen((message) {
+    final json = jsonDecode(message);
+    if (json?['params']?['event']?['kind'] == 'TimelineEvents') {
+      Iterable<dynamic> timeLineEvents =
+          json?['params']?['event']?['timelineEvents'];
+      if (timeLineEvents.any(
+        (timeLineEvent) => allTimelineEvents.contains(
+          timeLineEvent?['name'],
+        ),
+      )) {
+        final relevantTimelineEvents = timeLineEvents.where(
+          (timeLineEvent) => allTimelineEvents.contains(
+            timeLineEvent?['name'],
+          ),
+        );
+        var start = relevantTimelineEvents.first;
+        var end = relevantTimelineEvents.last;
+        var diff = end['ts'] - start['ts'];
+        var name = start['name'];
+        result = result
+            .map(
+              (Data data) => data.name == name
+                  ? data.copyWith(
+                      data.count + 1,
+                      diff,
+                    )
+                  : data,
+            )
+            .toList();
       }
+    }
+  });
+
+  serviceClient.onIsolateEvent.listen((e) => Fimber.d('onIsolateEvent: $e'));
+  serviceClient.onTimelineEvent.listen((e) => TimelineEvent.parse);
+
+  unawaited(serviceClient.streamListen(EventStreams.kIsolate));
+  unawaited(serviceClient.streamListen(EventStreams.kTimeline));
+
+  final vm = await serviceClient.getVM();
+  final isolates = vm.isolates!;
+  Fimber.i('isolates: $isolates');
+
+  final isolateRef = isolates.first;
+  await serviceClient.getIsolate(isolateRef.id!);
+
+  Timer(
+    const Duration(minutes: 5),
+    () async {
+      Fimber.i('Waiting for service client to shut down...');
+      await serviceClient.dispose();
+
+      await serviceClient.onDone;
+      Fimber.i('Service client shut down.');
+
+      for (var data in result) {
+        Fimber.i('|| ${data.name}: ${data.average} milliseconds');
+      }
+
+      shell.kill();
     },
   );
 }

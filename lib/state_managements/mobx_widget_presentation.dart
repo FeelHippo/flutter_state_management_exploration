@@ -37,13 +37,11 @@ class MobWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {},
-      debugLabel: 'MobX',
-    );
     var state = FakeDataMobXState();
     Timer.periodic(const Duration(seconds: 5), (timer) {
+      Timeline.startSync('MobX');
       state.update();
+      Timeline.finishSync();
     });
     // The Observer widget (which is part of the flutter_mobx package),
     // provides a granular observer of the observables used in its builder function.

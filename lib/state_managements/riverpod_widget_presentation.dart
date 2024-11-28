@@ -17,7 +17,9 @@ class RiverpodWidgetConsumer extends riverpod.ConsumerWidget {
   @override
   Widget build(BuildContext context, riverpod.WidgetRef ref) {
     Timer(const Duration(seconds: 5), () {
+      Timeline.startSync('Riverpod');
       ref.invalidate(fakeDataProvider);
+      Timeline.finishSync();
     });
     final FakeData fakeData = ref.watch(fakeDataProvider);
     return FakeDataListTile(
@@ -34,10 +36,6 @@ class RiverpodWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {},
-      debugLabel: 'Riverpod',
-    );
     return riverpod.ProviderScope(child: RiverpodWidgetConsumer());
   }
 }
