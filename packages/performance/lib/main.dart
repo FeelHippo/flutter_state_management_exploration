@@ -39,9 +39,13 @@ class Data {
 late VmService serviceClient;
 
 void main() async {
+  // Plant a tree - the source that will receive log messages.
   Fimber.plantTree(DebugTree(useColors: true));
 
+  // Create a shell lines controller.
   var controller = ShellLinesController();
+  // Shell usage:
+  // https://github.com/tekartik/process_run.dart/blob/2f66de0ae3d8624f43e4684a12e8979c78ba8ee9/packages/process_run/doc/shell.md?plain=1#L101
   var shell = Shell(workingDirectory: '../../../', stdout: controller.sink);
 
   // read stdout line by line, ws uri will be shown there
@@ -88,6 +92,7 @@ Future<void> vmServiceConnection(String uri, Shell shell) async {
 
   Fimber.i('Dart process started.');
 
+  // Connect to the given uri and return a new VmService instance.
   serviceClient = await vmServiceConnectUri(
     uri,
     log: StdoutLog(),
@@ -102,16 +107,12 @@ Future<void> vmServiceConnection(String uri, Shell shell) async {
     if (json?['params']?['event']?['kind'] == 'TimelineEvents') {
       Iterable<dynamic> timeLineEvents =
           json?['params']?['event']?['timelineEvents'];
-      if (timeLineEvents.any(
+      final relevantTimelineEvents = timeLineEvents.where(
         (timeLineEvent) => allTimelineEvents.contains(
           timeLineEvent?['name'],
         ),
-      )) {
-        final relevantTimelineEvents = timeLineEvents.where(
-          (timeLineEvent) => allTimelineEvents.contains(
-            timeLineEvent?['name'],
-          ),
-        );
+      );
+      if (relevantTimelineEvents.isNotEmpty) {
         var start = relevantTimelineEvents.first;
         var end = relevantTimelineEvents.last;
         var diff = end['ts'] - start['ts'];
@@ -130,18 +131,22 @@ Future<void> vmServiceConnection(String uri, Shell shell) async {
     }
   });
 
+  // on an event from a VM stream
   serviceClient.onIsolateEvent.listen((e) => Fimber.d('onIsolateEvent: $e'));
   serviceClient.onTimelineEvent.listen((e) => TimelineEvent.parse);
 
+  // subscribes to a stream in the VM
   unawaited(serviceClient.streamListen(EventStreams.kIsolate));
   unawaited(serviceClient.streamListen(EventStreams.kTimeline));
 
+  // returns global information about a Dart virtual machine
   final vm = await serviceClient.getVM();
   final isolates = vm.isolates!;
   Fimber.i('isolates: $isolates');
 
   final isolateRef = isolates.first;
-  await serviceClient.getIsolate(isolateRef.id!);
+  final isolateById = await serviceClient.getIsolate(isolateRef.id!);
+  Fimber.i('isolateById: $isolateById');
 
   Timer(
     const Duration(minutes: 5),
@@ -153,7 +158,8 @@ Future<void> vmServiceConnection(String uri, Shell shell) async {
       Fimber.i('Service client shut down.');
 
       for (var data in result) {
-        Fimber.i('|| ${data.name}: ${data.average} milliseconds');
+        Fimber.i(
+            '|| ${data.name + (' ' * (20 - data.name.length))} | ${data.average} milliseconds');
       }
 
       shell.kill();
