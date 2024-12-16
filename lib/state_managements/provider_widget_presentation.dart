@@ -76,7 +76,9 @@ class ProviderWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
+    // Creates a ChangeNotifier using create and automatically disposes it
+    // when ChangeNotifierProvider is removed from the widget tree.
+    return ChangeNotifierProvider<FakeDataModel>(
       create: (_) => FakeDataModel(),
       // Consumer allows to access the provider of <FakeDataModel>
       child: Consumer<FakeDataModel>(
