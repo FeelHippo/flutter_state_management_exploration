@@ -20,6 +20,7 @@ class Data {
     required this.count,
     required this.average,
   });
+
   final String name;
   final int count;
   final double average;
@@ -43,16 +44,16 @@ void main() async {
   Fimber.plantTree(DebugTree(useColors: true));
 
   // Create a shell lines controller.
-  var controller = ShellLinesController();
+  ShellLinesController controller = ShellLinesController();
   // Shell usage:
   // https://github.com/tekartik/process_run.dart/blob/2f66de0ae3d8624f43e4684a12e8979c78ba8ee9/packages/process_run/doc/shell.md?plain=1#L101
-  var shell = Shell(workingDirectory: '../../../', stdout: controller.sink);
+  Shell shell = Shell(workingDirectory: '../../../', stdout: controller.sink);
 
   // read stdout line by line, ws uri will be shown there
-  controller.stream.listen((event) async {
+  controller.stream.listen((String event) async {
     if (event.contains('uri=')) {
-      final uri = event.split('uri=http://').last;
-      await vmServiceConnection('ws://$uri/ws', shell);
+      final String uri = event.split('uri=').last;
+      await vmServiceConnection(uri, shell);
     }
   });
 
@@ -70,7 +71,7 @@ void main() async {
 }
 
 Future<void> vmServiceConnection(String uri, Shell shell) async {
-  const allTimelineEvents = [
+  const List<String> allTimelineEvents = <String>[
     'Inherited',
     'Provider',
     'Cubit',
@@ -82,7 +83,7 @@ Future<void> vmServiceConnection(String uri, Shell shell) async {
   ];
   List<Data> result = allTimelineEvents
       .map(
-        (timelineEvent) => Data(
+        (String timelineEvent) => Data(
           name: timelineEvent,
           count: 0,
           average: 0.0,
@@ -100,23 +101,24 @@ Future<void> vmServiceConnection(String uri, Shell shell) async {
 
   Fimber.i('VM service web socket connected.');
 
-  serviceClient.onSend.listen((message) => Fimber.d('message: $message'));
+  serviceClient.onSend
+      .listen((String message) => Fimber.d('message: $message'));
 
-  serviceClient.onReceive.listen((message) {
-    final json = jsonDecode(message);
+  serviceClient.onReceive.listen((String message) {
+    final dynamic json = jsonDecode(message);
     if (json?['params']?['event']?['kind'] == 'TimelineEvents') {
       Iterable<dynamic> timeLineEvents =
-          json?['params']?['event']?['timelineEvents'];
-      final relevantTimelineEvents = timeLineEvents.where(
-        (timeLineEvent) => allTimelineEvents.contains(
+          json?['params']?['event']?['timelineEvents'] as Iterable<dynamic>;
+      final Iterable<dynamic> relevantTimelineEvents = timeLineEvents.where(
+        (dynamic timeLineEvent) => allTimelineEvents.contains(
           timeLineEvent?['name'],
         ),
       );
       if (relevantTimelineEvents.isNotEmpty) {
-        var start = relevantTimelineEvents.first;
-        var end = relevantTimelineEvents.last;
-        var diff = end['ts'] - start['ts'];
-        var name = start['name'];
+        dynamic start = relevantTimelineEvents.first;
+        dynamic end = relevantTimelineEvents.last;
+        int diff = (end['ts'] - start['ts']) as int;
+        String name = start['name'] as String;
         result = result
             .map(
               (Data data) => data.name == name
@@ -132,20 +134,21 @@ Future<void> vmServiceConnection(String uri, Shell shell) async {
   });
 
   // on an event from a VM stream
-  serviceClient.onIsolateEvent.listen((e) => Fimber.d('onIsolateEvent: $e'));
-  serviceClient.onTimelineEvent.listen((e) => TimelineEvent.parse);
+  serviceClient.onIsolateEvent
+      .listen((Event e) => Fimber.d('onIsolateEvent: $e'));
+  serviceClient.onTimelineEvent.listen((Event e) => TimelineEvent.parse);
 
   // subscribes to a stream in the VM
   unawaited(serviceClient.streamListen(EventStreams.kIsolate));
   unawaited(serviceClient.streamListen(EventStreams.kTimeline));
 
   // returns global information about a Dart virtual machine
-  final vm = await serviceClient.getVM();
-  final isolates = vm.isolates!;
+  final VM vm = await serviceClient.getVM();
+  final List<IsolateRef> isolates = vm.isolates!;
   Fimber.i('isolates: $isolates');
 
-  final isolateRef = isolates.first;
-  final isolateById = await serviceClient.getIsolate(isolateRef.id!);
+  final IsolateRef isolateRef = isolates.first;
+  final Isolate isolateById = await serviceClient.getIsolate(isolateRef.id!);
   Fimber.i('isolateById: $isolateById');
 
   Timer(
@@ -157,7 +160,7 @@ Future<void> vmServiceConnection(String uri, Shell shell) async {
       await serviceClient.onDone;
       Fimber.i('Service client shut down.');
 
-      for (var data in result) {
+      for (Data data in result) {
         Fimber.i(
             '|| ${data.name + (' ' * (20 - data.name.length))} | ${data.average} milliseconds');
       }
