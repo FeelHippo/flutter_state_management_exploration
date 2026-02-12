@@ -8,10 +8,12 @@ class FakeDataMobXState {
   FakeDataMobXState() {
     update = mobx.Action(_update);
   }
+
   // Actions are how you mutate the observables. Rather than mutating them directly,
   // actions add a semantic meaning to the mutations.
   // For example, instead of just doing value++, firing an increment() action carries more meaning.
   late mobx.Action update;
+
   void _update() {
     _value.value = FakeData(
       person: Person(random),
@@ -20,7 +22,7 @@ class FakeDataMobXState {
     );
   }
 
-  final _value = mobx.Observable(
+  final mobx.Observable<FakeData> _value = mobx.Observable<FakeData>(
     FakeData(
       person: Person(random),
       vehicle: Vehicle(random),
@@ -29,6 +31,7 @@ class FakeDataMobXState {
   );
 
   FakeData get value => _value.value;
+
   set value(FakeData fakeData) => _value.value = fakeData;
 }
 
@@ -37,8 +40,8 @@ class MobWidgetRender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var state = FakeDataMobXState();
-    Timer.periodic(const Duration(seconds: 5), (timer) {
+    FakeDataMobXState state = FakeDataMobXState();
+    Timer.periodic(const Duration(seconds: 5), (Timer timer) {
       Timeline.startSync('MobX');
       state.update();
       Timeline.finishSync();

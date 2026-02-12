@@ -40,19 +40,21 @@ class ReduxWidgetPresentation extends StatelessWidget {
   }
 }
 
+// ideally stored in IoC
+final Store<FakeData> store = Store<FakeData>(
+  updateReducer,
+  initialState: FakeData(
+    person: Person(random),
+    vehicle: Vehicle(random),
+    currency: Currency(random),
+  ),
+);
+
 class ReduxWidgetRender extends StatelessWidget {
   const ReduxWidgetRender({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final store = Store<FakeData>(
-      updateReducer,
-      initialState: FakeData(
-        person: Person(random),
-        vehicle: Vehicle(random),
-        currency: Currency(random),
-      ),
-    );
     return StoreProvider<FakeData>(
       store: store,
       child: const ReduxWidgetPresentation(),

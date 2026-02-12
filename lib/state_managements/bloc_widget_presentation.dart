@@ -36,6 +36,7 @@ class FakeDataBloc extends Bloc<FakeDataEvent, FakeDataState> {
     vehicle: Vehicle(random),
     currency: Currency(random),
   );
+
   FakeDataBloc() : super(FakeDataState(fakeData: initialValue)) {
     on<UpdateFakeDataEvent>(handleUpdateFakeDataEvent);
   }
@@ -61,7 +62,9 @@ class BlocWidgetPresentation extends StatefulWidget {
     super.key,
     required this.fakeData,
   });
+
   final FakeData fakeData;
+
   @override
   State<BlocWidgetPresentation> createState() =>
       _BlocWidgetPresentationWidgetState();
@@ -75,9 +78,9 @@ class _BlocWidgetPresentationWidgetState extends State<BlocWidgetPresentation> {
     super.initState();
     // when _fakeData is updated, only the widgets that depend on it will be rebuilt,
     // which makes the application more efficient and performant.
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
       Timeline.startSync('Bloc');
-      context.read<FakeDataBloc>().add(const UpdateFakeDataEvent());
+      BlocProvider.of<FakeDataBloc>(context).add(const UpdateFakeDataEvent());
       Timeline.finishSync();
     });
   }
@@ -104,7 +107,7 @@ class BlocWidgetRender extends StatelessWidget {
   Widget build(BuildContext context) {
     // It is used as a dependency injection (DI) widget so that a single
     // instance of a Bloc can be provided to multiple widgets within a subtree.
-    return BlocProvider(
+    return BlocProvider<FakeDataBloc>(
       create: (_) => FakeDataBloc(),
       // BlocBuilder handles building a widget in response to new states
       child: BlocBuilder<FakeDataBloc, FakeDataState>(

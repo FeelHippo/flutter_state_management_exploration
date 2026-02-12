@@ -30,7 +30,9 @@ class ProviderWidgetPresentation extends StatefulWidget {
     super.key,
     required this.fakeDataModel,
   });
+
   final FakeDataModel fakeDataModel;
+
   @override
   State<ProviderWidgetPresentation> createState() =>
       _ProviderWidgetPresentationWidgetState();
@@ -38,14 +40,14 @@ class ProviderWidgetPresentation extends StatefulWidget {
 
 class _ProviderWidgetPresentationWidgetState
     extends State<ProviderWidgetPresentation> {
-  late Timer timer;
+  late Timer _timer;
 
   @override
   void initState() {
     super.initState();
     // when _fakeData is updated, only the widgets that depend on it will be rebuilt,
     // which makes the application more efficient and performant.
-    timer = Timer.periodic(
+    _timer = Timer.periodic(
       const Duration(seconds: 5),
       (_) {
         setState(() {
@@ -59,6 +61,7 @@ class _ProviderWidgetPresentationWidgetState
 
   @override
   void dispose() {
+    _timer.cancel();
     super.dispose();
   }
 
@@ -82,7 +85,11 @@ class ProviderWidgetRender extends StatelessWidget {
       create: (_) => FakeDataModel(),
       // Consumer allows to access the provider of <FakeDataModel>
       child: Consumer<FakeDataModel>(
-        builder: (context, fakeDataModel, child) {
+        builder: (
+          BuildContext context,
+          FakeDataModel fakeDataModel,
+          Widget? child,
+        ) {
           return ProviderWidgetPresentation(fakeDataModel: fakeDataModel);
         },
       ),

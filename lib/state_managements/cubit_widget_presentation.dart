@@ -24,7 +24,9 @@ class CubitWidgetPresentation extends StatefulWidget {
     super.key,
     required this.fakeData,
   });
+
   final FakeData fakeData;
+
   @override
   State<CubitWidgetPresentation> createState() =>
       _CubitWidgetPresentationWidgetState();
@@ -76,7 +78,7 @@ class CubitWidgetRender extends StatelessWidget {
   Widget build(BuildContext context) {
     // It is used as a dependency injection (DI) widget so that a single
     // instance of a Cubit can be provided to multiple widgets within a subtree.
-    return BlocProvider(
+    return BlocProvider<FakeDataCubit>(
       create: (_) => FakeDataCubit(),
       // BlocBuilder handles building a widget in response to new states
       child: BlocBuilder<FakeDataCubit, FakeData>(

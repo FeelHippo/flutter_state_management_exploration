@@ -8,7 +8,7 @@ class FakeDataJuneState extends JuneState {
     currency: Currency(random),
   );
 
-  update() {
+  void update() {
     fakeData = FakeData(
       person: Person(random),
       vehicle: Vehicle(random),
@@ -23,16 +23,16 @@ class JuneWidgetConsumer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Timer.periodic(const Duration(seconds: 5), (timer) {
+    Timer.periodic(const Duration(seconds: 5), (Timer timer) {
       // Update the states using the setState method
       Timeline.startSync('June');
       June.getState(() => FakeDataJuneState()).update();
       Timeline.finishSync();
     });
     // The state management wraps the widget to be managed with JuneBuilder
-    return JuneBuilder(
+    return JuneBuilder<FakeDataJuneState>(
       () => FakeDataJuneState(),
-      builder: (state) => FakeDataListTile(
+      builder: (FakeDataJuneState state) => FakeDataListTile(
         fakeData: state.fakeData,
         source: 'J',
       ),

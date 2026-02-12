@@ -29,13 +29,14 @@ class InheritedWidgetRender extends StatefulWidget {
   const InheritedWidgetRender({
     super.key,
   });
+
   @override
   State<InheritedWidgetRender> createState() => _InheritedWidgetRenderState();
 }
 
 class _InheritedWidgetRenderState extends State<InheritedWidgetRender> {
   late FakeData _fakeData;
-  late Timer timer;
+  late Timer _timer;
 
   @override
   void initState() {
@@ -49,7 +50,7 @@ class _InheritedWidgetRenderState extends State<InheritedWidgetRender> {
 
     // when _fakeData is updated, only the widgets that depend on it will be rebuilt,
     // which makes the application more efficient and performant.
-    timer = Timer.periodic(
+    _timer = Timer.periodic(
       const Duration(seconds: 5),
       (_) {
         setState(() {
@@ -65,14 +66,14 @@ class _InheritedWidgetRenderState extends State<InheritedWidgetRender> {
 
   @override
   void dispose() {
-    timer.cancel();
+    _timer.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return InheritedWidgetData(
-      key: GlobalKey(),
+      key: GlobalKey(debugLabel: 'inherited_widget_global_key'),
       fakeData: _fakeData,
       child: const InheritedWidgetPresentationWidget(),
     );

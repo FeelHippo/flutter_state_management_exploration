@@ -14,6 +14,7 @@ import 'package:june/state_manager.dart';
 import 'package:mobx/mobx.dart' as mobx;
 import 'package:provider/provider.dart';
 import 'package:redux/redux.dart';
+import 'package:riverpod/src/notifier.dart';
 
 part 'state_managements/bloc_widget_presentation.dart';
 part 'state_managements/cubit_widget_presentation.dart';
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const Scaffold(
-        body: StateManagementList(),
+        body: const StateManagementList(),
       ),
     );
   }
@@ -54,6 +55,7 @@ class FakeData extends Equatable {
     required this.vehicle,
     required this.currency,
   });
+
   final Person person;
   final Vehicle vehicle;
   final Currency currency;
@@ -66,37 +68,36 @@ class FakeData extends Equatable {
       ];
 }
 
+final List<Widget> items = <Widget>[
+  const InheritedWidgetRender(),
+  const ProviderWidgetRender(),
+  const CubitWidgetRender(),
+  const BlocWidgetRender(),
+  const RiverpodWidgetRender(),
+  const ReduxWidgetRender(),
+  const JuneWidgetConsumer(),
+  const MobWidgetRender(),
+];
+
 class StateManagementList extends StatelessWidget {
   const StateManagementList({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> items = <Widget>[
-      const InheritedWidgetRender(),
-      const ProviderWidgetRender(),
-      const CubitWidgetRender(),
-      const BlocWidgetRender(),
-      const RiverpodWidgetRender(),
-      const ReduxWidgetRender(),
-      const JuneWidgetConsumer(),
-      const MobWidgetRender(),
-    ];
     return CustomScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      slivers: [
+      slivers: <Widget>[
         SliverFillRemaining(
           fillOverscroll: true,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: <Widget>[
               ListView.builder(
                 padding: const EdgeInsets.all(32),
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
                 itemCount: items.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return items[index];
-                },
+                itemBuilder: (BuildContext context, int index) => items[index],
               ),
             ],
           ),
